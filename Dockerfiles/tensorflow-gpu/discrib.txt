@@ -1,9 +1,0 @@
-For retinanet KJS
-Docker ENV
-ubuntu 16.04
-cuda 9.0
-cudnn 7.0
-python 3.x
-tensorflow-gpu 1.12.x
-opencv2
-jupyter notebook
