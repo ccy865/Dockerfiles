@@ -1,7 +1,7 @@
 # Nvidia Docker + TF API Object Detection training
 ## 1. *Docker image create*  
 **docker build -t wanted_name:tag Dockerfile_path**  
-<span style="color:red">Must be changed the file name to **Dokerfile**</span>
+!! Must be changed the file name to **'Dokerfile'**!!
 ## 2. *Docker Container create*  
 ```
 sudo docker run \
