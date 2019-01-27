@@ -5,14 +5,14 @@
 ## 2. *Docker Container create*  
 ```
 sudo docker run \
---runtime=nvidia \
---shm-size=1g \
---ulimit memlock=-1 \
---ulimit stack=67108864 \
--it -p 8888:8888 -p 6006:6006 \
---name TOD_keras_retina \
--v /ssd2/TOD_keras_volume:/workspace/TOD_keras_volume \
-nvcr.io/nvidia/tensorflow:18.08-py3
+    --runtime=nvidia \
+    --shm-size=1g \
+    --ulimit memlock=-1 \
+    --ulimit stack=67108864 \
+    -it -p 8888:8888 -p 6006:6006 \
+    --name TOD_keras_retina \
+    -v /ssd2/TOD_keras_volume:/workspace/TOD_keras_volume \
+    nvcr.io/nvidia/tensorflow:18.08-py3
 ```
 ## 3. *Tensorflow Object Detection API model training*  
 ### 3.1. *KITTI DATA SET tree : Host-Container Shared folder(-v)*
