@@ -15,9 +15,10 @@ sudo docker run \
 nvcr.io/nvidia/tensorflow:18.08-py3
 ```
 ## 3. *Tensorflow Object Detection API model training*  
-### 3.1 *Host-Container Shared folder(-v) tree*
+### 3.1. *KITTI DATA SET tree : Host-Container Shared folder(-v)*
 ```
 .
+├── inference
 └── kitti
     ├── train
     │   ├── images
@@ -26,81 +27,54 @@ nvcr.io/nvidia/tensorflow:18.08-py3
         ├── images
         └── labels
 ```
-<수정중 19.1.26>
+### 3.2. *From /workspace/keras-retinanet/*
+#### 3.2.1. Training run!
+```
+python keras_retinanet/bin/train.py \
+    --batch-size=6 \
+    --epochs=10 \
+    --steps=1000 \
+    --workers=2 \
+    --max-queue-size=8 \
+    --multi-gpu=2 \
+    --multi-gpu-force \
+    kitti /workspace/TOD_keras_volume/kitti/
+```
+##### 3.2.1.1. Result
+```
+From/workspace/keras-retinanet/logs/
+logs/
+└── events.out.tfevents.1548551959.09f90905e83c
 
-### 3.2 *From /workspace/models/research*
-#### 3.2.1 Export PATH
+From/workspace/keras-retinanet/snapshots/
+snapshots/
+└── resnet50_kitti_01.h5
 ```
-export PYTHONPATH=$PYTHONPATH:`pwd`:`pwd`/slim:`pwd`/object_detection
+#### 3.2.2. Transfer learning
 ```
-#### 3.2.2 Training Config Set
+python keras_retinanet/bin/train.py \
+    --weights /workspace/TOD_keras_volume/resnet50_kitti_100.h5 \
+    --batch-size=6 \
+    --epochs=10 \
+    --steps=1000 \
+    --workers=2 \
+    --max-queue-size=8 \
+    --multi-gpu=2 \
+    --multi-gpu-force \
+    kitti /workspace/TOD_keras_volume/kitti
 ```
-PIPELINE_CONFIG_PATH='/workspace/TOD_slim_volume/models/model/ssd_mobilenet_v1_kitti.config'
-MODEL_DIR='/workspace/TOD_slim_volume/data/'
-NUM_TRAIN_STEPS=100
-NUM_EVAL_STEPS=2
-SAMPLE_1_OF_N_EVAL_EXAMPLES=10
+##### 3.2.2.1. Result
+*Same 3.2.1.1.*
+#### 3.2.3. Converting train *.h5 to inference *.h5
+##### 3.2.3.1. Coverting
 ```
-#### 3.2.3 Training run!
+keras_retinanet/bin/convert_model.py \
+    /workspace/keras-retinanet/snapshots/resnet50_kitti_01.h5 \
+    /workspace/TOD_keras_volume/inference/resnet50_kitti_01.h5
 ```
-python object_detection/model_main.py \
-  --pipeline_config_path=${PIPELINE_CONFIG_PATH} \
-  --model_dir=${MODEL_DIR} \
-  --num_train_steps=${NUM_TRAIN_STEPS} \
-  --num_eval_steps=${NUM_EVAL_STEPS} \
-  --sample_1_of_n_eval_examples=$SAMPLE_1_OF_N_EVAL_EXAMPLES \
-  --alsologtostder
+##### 3.2.3.2. Result
+*From /workspace/TOD_keras_volume*
 ```
-##### 3.2.3.1 Result
-```
-├── checkpoint
-├── eval_0
-│   └── events.out.tfevents.1548482211.f8a49746244a
-├── events.out.tfevents.1548482119.f8a49746244a
-├── export
-│   └── Servo
-│       └── 1548482212
-│           ├── saved_model.pb
-│           └── variables
-│               ├── variables.data-00000-of-00001
-│               └── variables.index
-├── graph.pbtxt
-├── kitti.record_train.tfrecord
-├── kitti.record_val.tfrecord
-├── kitti_label_map.pbtxt
-├── model.ckpt-0.data-00000-of-00001
-├── model.ckpt-0.index
-├── model.ckpt-0.meta
-├── model.ckpt-100.data-00000-of-00001
-├── model.ckpt-100.index
-└── model.ckpt-100.meta
-```
-#### 3.2.4 Converting *.ckpt to *.pb for inference
-##### 3.2.4.1 Config set
-```
-INPUT_TYPE=image_tensor
-PIPELINE_CONFIG_PATH='/workspace/TOD_slim_volume/models/model/ssd_mobilenet_v1_kitti.config'
-TRAINED_CKPT_PREFIX='/workspace/TOD_slim_volume/data/model.ckpt-6000'
-EXPORT_DIR='/workspace/TOD_slim_volume/6000out'
-```
-##### 3.2.4.2 Coverting
-```
-python object_detection/export_inference_graph.py \
-  --input_type=${INPUT_TYPE} \
-  --pipeline_config_path=${PIPELINE_CONFIG_PATH} \
-  --trained_checkpoint_prefix=${TRAINED_CKPT_PREFIX} \
-  --output_directory=${EXPORT_DIR}
-```
-##### 3.2.4.3 Result
-```
-├── checkpoint
-├── frozen_inference_graph.pb
-├── model.ckpt.data-00000-of-00001
-├── model.ckpt.index
-├── model.ckpt.meta
-├── pipeline.config
-├── readme.txt
-└── saved_model
-    ├── saved_model.pb
-    └── variables
+inference/
+└── resnet50_kitti_01.h5
 ```
