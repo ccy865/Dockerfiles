@@ -83,7 +83,7 @@ python object_detection/model_main.py \
     └── model.ckpt-100.meta
 ```
 #### 3.2.4. Transfer learning
-*Move '*.ckpt' files to /data folder, then It will be auto trasfer learning.* 
+*Move '.ckpt' files to /data folder, then It will be auto trasfer learning.* 
 #### 3.2.5. Converting *.ckpt to *.pb for inference
 ##### 3.2.5.1. Config set
 ```
